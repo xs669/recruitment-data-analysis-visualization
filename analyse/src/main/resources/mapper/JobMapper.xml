@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xs.mapper.JobMapper">
+
+    <resultMap id="BaseResultMap" type="com.xs.domain.Job">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="handledAddress" column="handledAddress" jdbcType="VARCHAR"/>
+        <result property="transformAddress" column="transformAddress" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="handledType" column="handledType" jdbcType="VARCHAR"/>
+        <result property="educational" column="educational" jdbcType="VARCHAR"/>
+        <result property="workExperience" column="workExperience" jdbcType="VARCHAR"/>
+        <result property="workTag" column="workTag" jdbcType="VARCHAR"/>
+        <result property="handledWorkTag" column="handledWorkTag" jdbcType="VARCHAR"/>
+        <result property="salary" column="salary" jdbcType="VARCHAR"/>
+        <result property="handledSalary" column="handleSalary" jdbcType="VARCHAR"/>
+        <result property="avgSalary" column="avgSalary" jdbcType="INTEGER"/>
+        <result property="salaryMonth" column="salaryMonth" jdbcType="VARCHAR"/>
+        <result property="companyTags" column="companyTags" jdbcType="VARCHAR"/>
+        <result property="handledCompanyTags" column="handledCompanyTags" jdbcType="VARCHAR"/>
+        <result property="hrWork" column="hrWork" jdbcType="VARCHAR"/>
+        <result property="hrName" column="hrName" jdbcType="VARCHAR"/>
+        <result property="practice" column="practice" jdbcType="INTEGER"/>
+        <result property="companyTitle" column="companyTitle" jdbcType="VARCHAR"/>
+        <result property="companyAvatar" column="companyAvatar" jdbcType="VARCHAR"/>
+        <result property="companyNature" column="companyNature" jdbcType="VARCHAR"/>
+        <result property="companyStatus" column="companyStatus" jdbcType="VARCHAR"/>
+        <result property="companyPeople" column="companyPeople" jdbcType="VARCHAR"/>
+        <result property="handledCompanyPeople" column="handledCompanyPeople" jdbcType="VARCHAR"/>
+        <result property="detailUrl" column="detailUrl" jdbcType="VARCHAR"/>
+        <result property="companyUrl" column="companyUrl" jdbcType="VARCHAR"/>
+        <result property="dist" column="dist" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getJobTypeCount" resultType="com.xs.dto.JobTypeCountDto">
+        select type jobName, count(*) number
+        from job
+        where practice = 0
+        group by type
+        order by number desc
+    </select>
+
+    <select id="getSalaryList" resultType="com.xs.dto.SalaryDto">
+        select id, salary
+        from job
+    </select>
+
+    <select id="getAvgSalaryByJobType"
+            resultType="com.xs.vo.AvgSalaryByJobTypeVo">
+        select type, sum(avgSalary) sumSalary, count(*) jobCount
+        from job
+        where practice = 0
+        group by type
+        order by sumSalary / jobCount desc
+        limit 0, 10
+    </select>
+
+    <select id="getWorkExperienceByGroup"
+            resultType="com.xs.vo.WorkExperienceByGroupVo">
+        select workExperience, count(*) count
+        from job
+        where practice = 0
+          and workExperience != '在校生'
+          and workExperience != '应届生'
+        group by workExperience
+        order by count desc
+    </select>
+
+    <select id="getEducationalByGroup"
+            resultType="com.xs.dto.EducationalByGroupDto">
+        select educational, count(*) count
+        from job
+        where educational IS NOT NULL
+        group by educational
+    </select>
+
+    <select id="getMainDataCount" resultType="com.xs.dto.MainDataCountDto">
+        select count(*)                      jobCount,
+               count(distinct address)       hotCityCount,
+               count(distinct companyTitle)  companyCount,
+               count(distinct companyNature) companyTypeCount
+        from job;
+    </select>
+
+    <select id="getAddressAndDist" resultType="com.xs.domain.Job">
+        select id, address, dist
+        from job
+    </select>
+
+    <select id="getWorkTagByType" resultType="com.xs.domain.Job">
+        select workTag
+        from job
+        where handledType = #{handledType}
+    </select>
+
+    <select id="getSearchParameterCity" resultType="java.lang.String">
+        select distinct address
+        from job
+    </select>
+
+    <select id="getSearchParameterWorkExperience" resultType="java.lang.String">
+        select distinct workExperience
+        from job
+        where practice = 0
+          and workExperience != '应届生'
+          and workExperience != '在校生'
+    </select>
+
+    <select id="getSearchParameterEducation" resultType="java.lang.String">
+        select distinct educational
+        from job
+        where educational is not null
+    </select>
+
+    <select id="getSearchParameterJobType" resultType="java.lang.String">
+        select distinct type
+        from job
+    </select>
+
+    <select id="getAllWorkTag" resultType="com.xs.domain.Job">
+        select id, workTag
+        from job
+    </select>
+
+    <select id="getAllCompanyTags" resultType="com.xs.domain.Job">
+        select id, companyTags
+        from job
+        where companyTags != '无'
+    </select>
+
+    <select id="getAllSalary" resultType="com.xs.domain.Job">
+        select id, salary, salaryMonth
+        from job
+    </select>
+
+    <select id="getAllCompanyPeople" resultType="com.xs.domain.Job">
+        select id, companyPeople
+        from job
+    </select>
+
+    <select id="getWorkExperienceAndAvgSalaryByJobType"
+            resultType="com.xs.dto.WorkExperienceAndAvgSalaryByJobTypeDto">
+        select workExperience, sum(avgSalary) sum, count(*) count
+        from job
+        where handledType = #{handledType}
+          and practice = 0
+          and workExperience != '在校生'
+          and workExperience != '应届生'
+        group by workExperience;
+    </select>
+
+    <select id="getEducationAndAvgSalaryByJobType"
+            resultType="com.xs.dto.EducationAndAvgSalaryByJobTypeDto">
+        select educational, sum(avgSalary) sum, count(*) count
+        from job
+        where handledType = #{handledType}
+          and practice = 0
+          and educational is not null
+        group by educational;
+    </select>
+
+    <select id="getJobTypeAndHandledJobType" resultType="com.xs.vo.JobTypeVo">
+        select distinct type, handledType from job
+    </select>
+
+    <select id="getCompanyNatureAndAvgSalaryByJobType"
+            resultType="com.xs.dto.CompanyNatureAndAvgSalaryByJobTypeDto">
+        select companyNature, sum(avgSalary) sum, count(*) count
+        from job where handledType = #{handledType}
+        group by companyNature
+        order by sum / count desc
+        limit 10;
+    </select>
+
+    <select id="getCompanyPeopleAndAvgSalaryByJobType"
+            resultType="com.xs.vo.CompanyPeopleAndAvgSalaryByJobTypeVo">
+        select handledCompanyPeople, sum(avgSalary) sum, count(*) count
+        from job
+        where handledType = #{handledType}
+        group by handledCompanyPeople
+        order by sum / count desc;
+    </select>
+
+    <select id="getEducationalByGroupAndJobType"
+            resultType="com.xs.dto.EducationalByGroupAndJobTypeDto">
+        select educational, count(*) count
+        from job
+        where handledType = #{handledType}
+          and educational is not null
+        group by educational
+        order by count desc;
+    </select>
+
+    <select id="getWorkExperienceByGroupAndJobType"
+            resultType="com.xs.dto.WorkExperienceByGroupAndJobTypeDto">
+        select workExperience, count(*) count
+        from job
+        where handledType = #{handledType}
+          and practice = 0
+          and workExperience != '应届生'
+          and workExperience != '在校生'
+        group by workExperience
+        order by count desc;
+    </select>
+
+    <select id="getCompanyNatureByGroupAndJobType"
+            resultType="com.xs.dto.CompanyNatureByGroupAndJobTypeDto">
+        select companyNature, count(*) count
+        from job
+        where handledType = #{handledType}
+        group by companyNature
+        order by count desc
+        limit 10;
+    </select>
+
+    <select id="getCompanyPeopleByGroupAndJobType"
+            resultType="com.xs.vo.CompanyPeopleByGroupAndJobTypeVo">
+        select handledCompanyPeople, count(*) count
+        from job
+        where handledType = #{handledType}
+        group by handledCompanyPeople
+        order by count desc;
+    </select>
+
+    <select id="getCompanyTagsByJobType" resultType="com.xs.domain.Job">
+        select companyTags
+        from job
+        where handledType = #{handledType}
+          and companyTags != '无'
+    </select>
+
+    <select id="getAddressByGroupAndJobType" resultType="com.xs.dto.AddressByGroupAndJobTypeDto">
+        select
+            handledAddress, count(*) count
+        from job
+        where handledType = #{handledType}
+          and transformAddress = #{transformAddress}
+          and handledAddress != #{handledAddress}
+        group by handledAddress
+        order by count desc
+        limit 10;
+    </select>
+
+    <select id="getAllAddress" resultType="com.xs.vo.AddressVo">
+        select distinct address, transformAddress from job
+    </select>
+
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xs.mapper.AdminMapper">
+
+    <resultMap id="BaseResultMap" type="com.xs.domain.Admin">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="role" column="role" jdbcType="VARCHAR"/>
+            <result property="expiration" column="expiration" jdbcType="TIMESTAMP"/>
+            <result property="educational" column="educational" jdbcType="VARCHAR"/>
+            <result property="workExperience" column="workExperience" jdbcType="VARCHAR"/>
+            <result property="address" column="address" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="VARCHAR"/>
+            <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="getAdminByUserName" resultType="com.xs.domain.Admin">
+        select
+            id, username, password,
+            role, expiration, educational,
+            workExperience, address, type,
+            avatar, createTime
+        from admin
+        where username = #{username}
+    </select>
+
+</mapper>
