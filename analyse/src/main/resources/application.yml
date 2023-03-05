@@ -17,7 +17,7 @@ spring:
   redis:
     host: #若在windows上则不用写，若在服务器上则写上服务器的ip地址
     port: 6379
-    password: 密码(默认没有密码)
+    password: #密码(默认没有密码)
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
