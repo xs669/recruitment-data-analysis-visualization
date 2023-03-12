@@ -257,11 +257,12 @@ export default {
       this.searchParameterVo.workExperience = this.value2
       this.searchParameterVo.education = this.value3
       this.searchParameterVo.jobType = this.value4
-      this.searchParameterVo.currentPage = this.currentPage
+      this.searchParameterVo.currentPage = 1
       this.searchParameterVo.pageSize = this.pageSize
       getAllJobData(this.searchParameterVo).then(res => {
         this.tableData = res.data.records
         this.total = res.data.total
+        this.currentPage = 1
       })
     }
   },
